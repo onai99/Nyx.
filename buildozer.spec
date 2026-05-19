@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Buildozer and Dependencies
+      - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
