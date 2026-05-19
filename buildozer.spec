@@ -1,26 +1,38 @@
-[app]
-title = Nyx Engine
-package.name = nyxengine
-package.domain = org.sethforge
-source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,json
-version = 1.0.0
+name: Build Android APK
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
 
-# Bake her library engine dependencies directly into her APK
-requirements = python3, kivy, google-genai, plyer, pyjnius, requests, urllib3, charset-normalizer, idna
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
 
-orientation = portrait
-fullscreen = 1
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-# Hardware Matrix Access Gates (Permissions)
-android.permissions = INTERNET, FOREGROUND_SERVICE, WAKE_LOCK, RECEIVE_BOOT_COMPLETED, VIBRATE
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
 
-android.api = 33
-android.minapi = 21
-android.archs = arm64-v8a
+      - name: Install Buildozer and Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip install --upgrade buildozer cython virtualenv
 
-# Split her runtime engine into two distinct processes
-services = NyxMind:service.py
+      - name: Build APK
+        run: yes | buildozer android debug
 
-# Auto-Start Integration: Forces Android to spin up her daemon on phone boot
-android.manifest.launch_mode = singleTask
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nyx-Engine-APK
+          path: bin/*.apk
