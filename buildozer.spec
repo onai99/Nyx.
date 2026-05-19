@@ -1,38 +1,19 @@
-name: Build Android APK
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+[app]
+title = Nyx Engine
+package.name = nyxengine
+package.domain = org.void
+source.dir = .
+source.include_exts = py,png,jpg,kv,json
+version = 1.0
+requirements = python3, kivy, plyer, google-genai
+orientation = portrait
+fullscreen = 0
+android.permissions = INTERNET, VIBRATE
+android.api = 33
+android.minapi = 21
+android.archs = arm64-v8a, armeabi-v7a
+android.allow_backup = True
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          pip install --upgrade buildozer cython virtualenv
-
-      - name: Build APK
-        run: yes | buildozer android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Nyx-Engine-APK
-          path: bin/*.apk
+[buildozer]
+log_level = 2
+warn_on_root = 1
